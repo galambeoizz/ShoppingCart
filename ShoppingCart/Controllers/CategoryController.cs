@@ -17,7 +17,7 @@ namespace ShoppingCart.Controllers
 			var category = _dataContext.Categories.Where(x=>x.Slug == Slug).FirstOrDefault();
 			if (category == null)
 			{
-				return RedirectToAction("Index");
+				return RedirectToAction("Index", "Home");
 			}
 			var productByCategory = _dataContext.Products.Include("Category").Include("Brand").Where(x => x.CategoryId == category.Id);
 

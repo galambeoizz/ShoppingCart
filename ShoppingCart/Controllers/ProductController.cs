@@ -22,7 +22,7 @@ namespace ShoppingCart.Controllers
 			{
 				return RedirectToAction("Index");
 			}
-			var productById = _dataContext.Products.Include("Category").Include("Brand").Where(x => x.Id == Id).FirstOrDefaultAsync();
+			var productById = _dataContext.Products.OrderByDescending(x => x.Id).Include("Category").Include("Brand").ToListAsync();
 			return View(await productById);
 		}
 	}
