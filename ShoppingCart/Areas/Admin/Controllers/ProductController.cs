@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using ShoppingCart.Models;
 using ShoppingCart.Repository;
 
 namespace ShoppingCart.Areas.Admin.Controllers
@@ -18,11 +19,26 @@ namespace ShoppingCart.Areas.Admin.Controllers
 			return View(await _dataContext.Products.OrderByDescending(x => x.Id).Include(x => x.Category).Include(x => x.Brand).ToListAsync());
 		}
 
+		[HttpGet]
 		public IActionResult Create()
 		{
 			ViewBag.Categories = new SelectList(_dataContext.Categories, "Id", "Name");
 			ViewBag.Brands = new SelectList(_dataContext.Brands, "Id", "Name");
 			return View();
+		}
+
+		public async Task<IActionResult> Create(ProductModel product)
+		{
+			ViewBag.Categories = new SelectList(_dataContext.Categories, "Id", "Name", product.CategoryId);
+			ViewBag.Brands = new SelectList(_dataContext.Brands, "Id", "Name", product.BrandId);
+			//if (ModelState.IsValid)
+			//{
+			//	_dataContext.Products.Add(product);
+			//	await _dataContext.SaveChangesAsync();
+			//	return RedirectToAction("Index");
+			//}
+			
+			return View(product);
 		}
 	}
 }
