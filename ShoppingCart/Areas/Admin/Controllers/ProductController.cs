@@ -10,9 +10,11 @@ namespace ShoppingCart.Areas.Admin.Controllers
 	public class ProductController : Controller
 	{
 		private readonly DataContext _dataContext;
-		public ProductController(DataContext context)
+		private readonly IWebHostEnvironment _webHostEnvironment;
+		public ProductController(DataContext context, IWebHostEnvironment webHostEnvironment)
 		{
 			_dataContext = context;
+			_webHostEnvironment = webHostEnvironment;
 		}
 		public async Task<IActionResult> Index()
 		{
@@ -27,17 +29,42 @@ namespace ShoppingCart.Areas.Admin.Controllers
 			return View();
 		}
 
+		[HttpPost]
+		[ValidateAntiForgeryToken]
 		public async Task<IActionResult> Create(ProductModel product)
 		{
 			ViewBag.Categories = new SelectList(_dataContext.Categories, "Id", "Name", product.CategoryId);
 			ViewBag.Brands = new SelectList(_dataContext.Brands, "Id", "Name", product.BrandId);
-			//if (ModelState.IsValid)
-			//{
-			//	_dataContext.Products.Add(product);
-			//	await _dataContext.SaveChangesAsync();
-			//	return RedirectToAction("Index");
-			//}
-			
+			if (ModelState.IsValid)
+			{
+				product.Slug = product.Name.Replace(" ", "-");
+				var slug = await _dataContext.Products.FirstOrDefaultAsync(x => x.Slug == product.Slug);
+				if (slug != null)
+				{
+					ModelState.AddModelError("", "This product is already created!");
+					return View(product);
+				}
+				else
+				{
+					if (product.ImageUpload != null)
+					{
+						string uploadsFolder = Path.Combine(_webHostEnvironment.WebRootPath, "media/products");
+						string uniqueFileName = Guid.NewGuid().ToString() + "_" + product.ImageUpload.FileName;
+						string filePath = Path.Combine(uploadsFolder, uniqueFileName);
+
+						FileStream fileStream = new FileStream(filePath, FileMode.Create);
+						await product.ImageUpload.CopyToAsync(fileStream);
+						fileStream.Close();
+
+						product.Image = uniqueFileName;
+					}
+				}
+				_dataContext.Products.Add(product);
+				await _dataContext.SaveChangesAsync();
+				TempData["success"] = "Product created successfully.";
+				return RedirectToAction("Index");
+			}
+
 			return View(product);
 		}
 	}

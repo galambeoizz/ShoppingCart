@@ -11,7 +11,7 @@ namespace ShoppingCart.Models
 		[Required, MinLength(4, ErrorMessage = "Please enter Name")]
 		public string Name { get; set; }
 		[Required, MinLength(4, ErrorMessage = "Please enter Description")]
-		public string Slug { get; set; }
+		public string Slug { get; set; } = "Default value";
 		[Required, MinLength(4, ErrorMessage = "Please enter Description")]
 		public string Description { get; set; }
 		[Required]
@@ -21,7 +21,7 @@ namespace ShoppingCart.Models
 		public int CategoryId { get; set; }
 		public CategoryModel Category { get; set; }
 		public BrandModel Brand { get; set; }
-		public string Image {  get; set; }
+		public string Image { get; set; } = "noimage.jpg";
 		[NotMapped]
 		[FileExtension]
 		public IFormFile ImageUpload { get; set; }

@@ -17,6 +17,19 @@ namespace ShoppingCart.Repository.Vadilation
 				}
 			}
 			return ValidationResult.Success;
+
+			//if (value is FormFile file)
+			//{
+			//	var extension = Path.GetExtension(file.Name);
+			//	var allowedExtensions = new[] { ".jpg", ".jpeg", ".png" };
+
+			//	bool result = extension.Any(x => extension.EndsWith(x));
+			//	if (!result)
+			//	{
+			//		return new ValidationResult("Invalid file type. Only .jpg, .jpeg, .png are allowed.");
+			//	}
+			//}
+			//return ValidationResult.Success;
 		}
 	}
 }
